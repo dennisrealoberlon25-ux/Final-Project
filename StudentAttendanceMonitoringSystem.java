@@ -63,7 +63,6 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         }
     }
 
-    // MAIN CONSTRUCTOR
     public StudentAttendanceMonitoringSystem() {
         setTitle("Student Attendance Monitoring System");
         setSize(720, 570);
@@ -73,14 +72,32 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         showMenu();
     }
 
-    // SHOW A SCREEN
     private void show(JPanel panel) {
         setContentPane(panel);
         revalidate();
         repaint();
     }
 
-    // MAIN MENU
+    // Shared layout for Add, Update, Attendance, and Records screens
+    private void buildScreen(String titleText, JComponent center, JButton... buttons) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
+
+        JLabel title = new JLabel(titleText, SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 20));
+
+        JPanel buttonPanel = new JPanel();
+        for (JButton b : buttons) {
+            buttonPanel.add(b);
+        }
+
+        panel.add(title, BorderLayout.NORTH);
+        panel.add(center, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        show(panel);
+    }
+
     private void showMenu() {
         JPanel panel = new JPanel(new GridLayout(7, 1, 12, 12));
         panel.setBorder(BorderFactory.createEmptyBorder(35, 45, 35, 45));
@@ -115,14 +132,8 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         show(panel);
     }
 
-    // ADD STUDENT FORM
+    // ADD STUDENT
     private void showAddStudent() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
-
-        JLabel title = new JLabel("ADD STUDENT", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-
         JPanel form = new JPanel(new GridLayout(7, 2, 8, 8));
 
         idField = new JTextField();
@@ -144,18 +155,9 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         saveButton.addActionListener(e -> addStudent());
         backButton.addActionListener(e -> showMenu());
 
-        JPanel buttons = new JPanel();
-        buttons.add(saveButton);
-        buttons.add(backButton);
-
-        panel.add(title, BorderLayout.NORTH);
-        panel.add(form, BorderLayout.CENTER);
-        panel.add(buttons, BorderLayout.SOUTH);
-
-        show(panel);
+        buildScreen("ADD STUDENT", form, saveButton, backButton);
     }
 
-    // ADD STUDENT
     private void addStudent() {
         String id = idField.getText().trim();
         String name = nameField.getText().trim().toUpperCase();
@@ -171,7 +173,7 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
             return;
         }
 
-        if (date.isEmpty() || !validDate(date)) {
+        if (!validDate(date)) {
             return;
         }
 
@@ -190,7 +192,6 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         showMenu();
     }
 
-    // SAVE STUDENT + FIRST ATTENDANCE TO DATABASE
     private boolean saveStudentToDatabase(Student student, String date, String status) {
 
         String studentSQL = "INSERT INTO student "
@@ -305,14 +306,8 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         }
     }
 
-    // UPDATE STUDENT FORM
+    // UPDATE STUDENT
     private void showUpdateStudent() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
-
-        JLabel title = new JLabel("UPDATE STUDENT", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-
         JPanel form = new JPanel(new GridLayout(5, 2, 8, 8));
 
         JComboBox<String> updateStudentBox = new JComboBox<>();
@@ -370,18 +365,9 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
 
         backButton.addActionListener(e -> showMenu());
 
-        JPanel buttons = new JPanel();
-        buttons.add(saveButton);
-        buttons.add(backButton);
-
-        panel.add(title, BorderLayout.NORTH);
-        panel.add(form, BorderLayout.CENTER);
-        panel.add(buttons, BorderLayout.SOUTH);
-
-        show(panel);
+        buildScreen("UPDATE STUDENT", form, saveButton, backButton);
     }
 
-    // LOAD SELECTED STUDENT'S NAME INTO TEXT FIELD
     private void loadNameInto(JComboBox<String> box, JTextField field) {
         String selected = (String) box.getSelectedItem();
 
@@ -408,14 +394,8 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         }
     }
 
-    // MARK ATTENDANCE FORM
+    // MARK ATTENDANCE
     private void showAttendance() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
-
-        JLabel title = new JLabel("MARK ATTENDANCE", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-
         JPanel form = new JPanel(new GridLayout(3, 2, 8, 8));
 
         studentBox = new JComboBox<>();
@@ -434,18 +414,9 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         saveButton.addActionListener(e -> markAttendance());
         backButton.addActionListener(e -> showMenu());
 
-        JPanel buttons = new JPanel();
-        buttons.add(saveButton);
-        buttons.add(backButton);
-
-        panel.add(title, BorderLayout.NORTH);
-        panel.add(form, BorderLayout.CENTER);
-        panel.add(buttons, BorderLayout.SOUTH);
-
-        show(panel);
+        buildScreen("MARK ATTENDANCE", form, saveButton, backButton);
     }
 
-    // MARK ATTENDANCE
     private void markAttendance() {
         String selectedStudent = (String) studentBox.getSelectedItem();
 
@@ -457,7 +428,7 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         String id = extractId(selectedStudent);
         String date = attendanceDateField.getText().trim();
 
-        if (date.isEmpty() || !validDate(date)) {
+        if (!validDate(date)) {
             return;
         }
 
@@ -506,12 +477,6 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
 
     // VIEW STUDENT RECORDS
     private void showRecords() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
-
-        JLabel title = new JLabel("ALL STUDENT RECORDS", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-
         recordsArea = new JTextArea();
         recordsArea.setEditable(false);
         recordsArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
@@ -522,20 +487,12 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         refreshButton.addActionListener(e -> displayRecords());
         backButton.addActionListener(e -> showMenu());
 
-        JPanel buttons = new JPanel();
-        buttons.add(refreshButton);
-        buttons.add(backButton);
-
-        panel.add(title, BorderLayout.NORTH);
-        panel.add(new JScrollPane(recordsArea), BorderLayout.CENTER);
-        panel.add(buttons, BorderLayout.SOUTH);
-
-        show(panel);
+        buildScreen("ALL STUDENT RECORDS", new JScrollPane(recordsArea),
+                refreshButton, backButton);
 
         displayRecords();
     }
 
-    // DISPLAY ALL RECORDS
     private void displayRecords() {
         String sql = "SELECT s.student_id, s.name, s.block, "
                 + "s.course, s.year_level, "
@@ -600,7 +557,7 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         recordsArea.setCaretPosition(0);
     }
 
-    // LOAD STUDENT LIST FROM DATABASE INTO A COMBO BOX
+    // HELPERS
     private void loadStudentChoices(JComboBox<String> box) {
         box.removeAllItems();
 
@@ -620,44 +577,23 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         }
     }
 
-    // GET STUDENT ID FROM "NAME (ID)"
+    // Gets the student ID from "NAME (ID)"
     private String extractId(String selected) {
         return selected.substring(
                 selected.lastIndexOf("(") + 1,
                 selected.lastIndexOf(")"));
     }
 
-    // ADD LABEL AND INPUT FIELD
     private void addField(JPanel panel, String label, Component field) {
         panel.add(new JLabel(label));
         panel.add(field);
     }
 
-    // DISPLAY MESSAGE
     private void showMessage(String message) {
-        JDialog dialog = new JDialog(this, "Student Attendance System", true);
-        dialog.setLayout(new BorderLayout(10, 10));
-
-        // HTML so that \n shows as a real line break
-        JLabel label = new JLabel(
-                "<html>" + message.replace("\n", "<br>") + "</html>");
-        label.setBorder(BorderFactory.createEmptyBorder(18, 20, 8, 20));
-
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> dialog.dispose());
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-
-        dialog.add(label, BorderLayout.CENTER);
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
+        JOptionPane.showMessageDialog(this, message,
+                "Student Attendance System", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // DATE VALIDATION
     private boolean validDate(String date) {
         try {
             LocalDate.parse(date, DATE_FORMAT);
@@ -668,7 +604,6 @@ public class StudentAttendanceMonitoringSystem extends JFrame {
         }
     }
 
-    // MAIN METHOD
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->
                 new StudentAttendanceMonitoringSystem().setVisible(true));
